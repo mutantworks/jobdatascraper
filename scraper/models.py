@@ -1,8 +1,11 @@
 import json
 
+from optparse import OptionParser
+
 from sqlalchemy import create_engine, Column
 from sqlalchemy import (Integer, Text)
 from sqlalchemy.orm import sessionmaker, declarative_base
+
 from base_logger import logger
 
 Base = declarative_base()
@@ -61,6 +64,11 @@ def getJobsByLocation(location):
     jobs = session.query(Jobs).filter(Jobs.location.ilike(f"%{location}%")).order_by(Jobs.location).all()
     session.close()
 
+    with open('query_result.txt', 'a+') as file:
+        file.write("---BY LOCATION---" + '\n')
+        for job in jobs:
+            file.write(str(job) + '\n')
+
     logger.info(jobs)
     return jobs
 
@@ -79,9 +87,23 @@ def getJobsByTechnology(technology):
     jobs = session.query(Jobs).filter(Jobs.job_description.ilike(f"%{technology}%")).order_by(Jobs.job_description).all()
     session.close()
 
+    with open('query_result.txt', 'a+') as file:
+        file.write("---BY TECHNOLOGY---" + '\n')
+        for job in jobs:
+            file.write(str(job) + '\n')
+
     logger.info(jobs)
     return jobs
 
 
 if __name__ == "__main__":
-    getJobsByTechnology("python")
+    parser = OptionParser()
+    parser.add_option("-l", "--location_wise", default="", help="Search data location wise.")
+    parser.add_option("-t", "--technology_wise", default="", help="Search data technology wise.")
+    attrs, args = parser.parse_args()
+
+    if attrs.location_wise:
+        getJobsByLocation(attrs.location_wise)
+
+    if attrs.technology_wise:
+        getJobsByTechnology(attrs.technology_wise)
