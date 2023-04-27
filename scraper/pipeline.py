@@ -14,8 +14,12 @@ class DataPipeLine:
         self.Session = sessionmaker(bind=engine)
 
     def process_item(self, item):
+        """
+        Store each item to DB
+        :param item: Job
+        :return:
+        """
 
-        # Write iterm to DB.
         session = self.Session()
         job = Jobs()
 
@@ -23,7 +27,6 @@ class DataPipeLine:
         if existing_job is not None:
             job = existing_job
 
-        logger.info(f"ITEM : {item}")
         try:
             job.job_id = item['job_id']
             job.job_title = item['job_title']

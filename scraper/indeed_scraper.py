@@ -1,3 +1,5 @@
+from optparse import OptionParser
+
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -7,30 +9,35 @@ from webdriver_manager.chrome import ChromeDriverManager
 from base_logger import logger
 from pipeline import DataPipeLine
 
-
-
 class Scraper:
 
-    # Driver Configs
     logger.info("Setting up chrome drivers...")
     options = Options()
     options.add_argument("start-maximized")
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-    driver.implicitly_wait(10)
     logger.info("Driver's setup successful...")
 
     base_url = 'https://indeed.com/'
-    jobs_to_be_scraped = 50
 
-    def __init__(self, position = "software developer", location = "india"):
+    def __init__(self, position, jobs_to_be_scraped):
+        """
+        Initialize required parameters
+        :param position: Job position
+        :param location: Job location
+        :param jobs_to_be_scraped: Number of to be scraped
+        """
         self.position = position
-        self.location = location
         self.extracted_jobs = []
+        self.jobs_to_be_scraped = int(jobs_to_be_scraped)
 
     def LoadIndeed(self):
+        """
+        Initiate indeed's page loading and search for the given position with location.
+        :return:
+        """
         logger.info("Initiating indeed crawler...")
-        logger.info(f"Crawling URL : {Scraper.base_url} | Position : {self.position} | Location : {self.location}")
+        logger.info(f"Base URL : {Scraper.base_url} [ Position : {self.position} | Jobs To Be Scraped : {self.jobs_to_be_scraped} ]")
         Scraper.driver.get(Scraper.base_url)
         job_position_field = Scraper.driver.find_element(By.XPATH, '//*[@id="text-input-what"]')
         job_position_field.send_keys(self.position)
@@ -39,9 +46,13 @@ class Scraper:
         initial_search_button.click()
 
     def ExtractJobList(self):
+        """
+        Extract job list from the different pages of jobs
+        :return:
+        """
         logger.info("Extracting Job URLs...")
 
-        while len(self.extracted_jobs) <= Scraper.jobs_to_be_scraped:
+        while len(self.extracted_jobs) <= self.jobs_to_be_scraped:
             Scraper.driver.implicitly_wait(3)
             job_cards = Scraper.driver.find_elements(By.XPATH,
                                              '//*[(@id = "mosaic-provider-jobcards")]//*[contains(concat( " ", @class, " " ), concat( " ", "eu4oa1w0", " " ))]')
@@ -60,10 +71,17 @@ class Scraper:
                 logger.error("Element extraction failed...")
                 pass
 
+        # Limit up to the provided job extraction number
+        self.extracted_jobs = self.extracted_jobs[:self.jobs_to_be_scraped]
+
     def ExtractIndividualJobData(self):
+        """
+        Extract Individual job data from particular job page.
+        :return:
+        """
         logger.info("Extracting individual job data...")
 
-        for job in self.extracted_jobs[:Scraper.jobs_to_be_scraped+1]:
+        for job in self.extracted_jobs:
             logger.info(f"Job in process : {job['job_url']}")
             Scraper.driver.get(job["job_url"])
 
@@ -105,6 +123,7 @@ class Scraper:
                 logger.error(f"Element extraction failed for JOB : POSTED DATE")
                 pass
 
+            #Extract Job Requirements + Responsibilities + Description
             try:
                 job["job_details"]["job_description"] = ""
                 job_description = Scraper.driver.find_element(By.XPATH, '//*[(@id = "jobDescriptionText")]')
@@ -119,6 +138,10 @@ class Scraper:
 
 
     def LoadJobs(self):
+        """
+        Pass on extracted job data to pipeline to store them in DB
+        :return:
+        """
         logger.info("Loading extracted data to DB...")
         logger.info(f"Total Extracted Jobs : {len(self.extracted_jobs)}")
 
@@ -130,7 +153,12 @@ class Scraper:
 
 
 if __name__ == "__main__":
-    s = Scraper()
+    parser = OptionParser()
+    parser.add_option("-p", "--position", default = "software developer", help = "Job position you want to search for.")
+    parser.add_option("-n", "--jobs_number", default = 50, help = "Number of jobs you want to scrap.")
+    attrs, args = parser.parse_args()
+
+    s = Scraper(attrs.position, attrs.jobs_number)
     s.LoadIndeed()
     s.ExtractJobList()
     s.ExtractIndividualJobData()
