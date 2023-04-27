@@ -1,0 +1,6 @@
+{
+  "LOG_LEVEL" : "INFO",
+  "LOG_FILE" : "scraper.logs",
+  "LOG_FORMAT" : "[%(asctime)s] : [%(levelname)8s] : [%(funcName)s:%(lineno)d] : %(message)s",
+  "DATABASE_CONNECTION_STRING" : "postgresql+psycopg2://postgres:admin@localhost/beekin"
+}
