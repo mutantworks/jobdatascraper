@@ -9,7 +9,7 @@
 - [Exploration](#exploration)
 - [Configs](#configs)
 - [Usage](#usage)
-- [Features](#feature)
+- [Features](#features)
 - [Maintainers](#maintainers)
 - [License](#license)
 
@@ -50,7 +50,7 @@ Options : \
 $ python indeed_scraper.py -p "software engineer" -n 50
 # Crawler will start crawling indeed website and scrap data for 50 jobs for software engineer position 
 ```
-To fetch already scraped data from DB use below command. \
+To fetch already scraped data from DB use below command from ./scraper/ directory. \
 Options : \
 -l [location] \
 -n [technology]
