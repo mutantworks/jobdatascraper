@@ -18,7 +18,7 @@
 > 1. Libraries to scrape data : 
 >    1. Scrapy 
 >       > Didn't work out well due to dynamic page randering on indeed website. Tried dynamic agenst and rotating proxies to send requests to indeed pages but somehow elements were not accessible.   
->    2. BeautifulSoup (Didn't work out well due to dynamic page randering on indeed website)
+>    2. BeautifulSoup 
 >       > Didn't work out well due to dynamic page randering on indeed website. Tried dynamic agenst to send requests to indeed pages but somehow page was not permissible to access. 
 >    3. Selenium 
 >       > Crawlers are little bit slow but works well with dynamic content. Most of the properties extracted.
