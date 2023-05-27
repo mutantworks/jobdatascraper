@@ -14,21 +14,10 @@
 - [License](#license)
 
 ## Exploration
-
-> 1. Libraries to scrape data : 
->    1. Scrapy 
->       > Didn't work out well due to dynamic page randering on indeed website. Tried dynamic agenst and rotating proxies to send requests to indeed pages but somehow elements were not accessible.   
->    2. BeautifulSoup 
->       > Didn't work out well due to dynamic page randering on indeed website. Tried dynamic agenst to send requests to indeed pages but somehow page was not permissible to access. 
->    3. Selenium 
->       > Crawlers are little bit slow but works well with dynamic content. Most of the properties extracted.
->    4. NLP libraries 
->       > To search for tech words to add technology as a separate column from huge unstructured data of job description.
-> 
-> 2. SQLAlchemy (https://www.sqlalchemy.org/)
+> 1. SQLAlchemy (https://www.sqlalchemy.org/)
 >    > To get rid of raw queries and to use ORM(Object Relational Mapper).
 >    
-> 3. psycopg2 (https://pypi.org/project/psycopg2/)
+> 2. psycopg2 (https://pypi.org/project/psycopg2/)
 >    > To connect with postgresql.
 
 
